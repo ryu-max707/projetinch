@@ -3,9 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\LivraisonController;
-
+use App\Http\Controllers\Admin\ColisController;
+use App\Http\Controllers\Admin\DashboardLivraisonController;
  
-
+ 
 
 
 /*
@@ -19,6 +20,17 @@ use App\Http\Controllers\Admin\LivraisonController;
 |
 */
  ;
+
+
+ // Groupe pour Admin
+   Route::prefix('admin')->name('admin.')->group(function () {
+      Route::resource('colis', ColisController::class);
+  });
+ 
+
+  Route::get('/admin/dashboard-livraisons', [DashboardLivraisonController::class, 'index'])->name('admin.dashboard.livraison');
+ 
+
 
 // Vue principale
 Route::get('/admin/livraison', [LivraisonController::class, 'index'])->name('admin.livraison');

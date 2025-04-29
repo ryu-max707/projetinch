@@ -16,8 +16,7 @@ class LivraisonList extends Component
 
         return view('livewire.admin.livraison-list', compact('livraisons'));
     }
-
-    public function edit($id)
+     public function edit($id)
     {
         // Utilisation de emitUp pour atteindre le composant parent s'il existe
         $this->emitUp('editLivraison', $id);
