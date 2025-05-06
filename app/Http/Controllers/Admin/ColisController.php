@@ -10,7 +10,9 @@ class ColisController extends Controller
 {
     public function index()
     {
-        return view('admin.colis');
+        $colis = Colis::all();  
+    
+        return view('admin.colis', compact('colis'));
     }
 
     public function destroy($id)

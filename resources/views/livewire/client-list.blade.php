@@ -23,10 +23,18 @@
                         <td>{{ $client->colis }} colis</td>
                         <td>{{ $client->zone }}</td>
                         <td>
-                            <span class="badge bg-{{ $client->statut === 'Actif' ? 'success' : ($client->statut === 'En attente' ? 'warning text-dark' : 'secondary') }}">
-                                {{ $client->statut }}
-                            </span>
-                        </td>
+    <span class="badge 
+        @if ($client->statut === 'Actif') 
+            bg-success 
+        @elseif ($client->statut === 'Inactif') 
+            bg-warning text-dark 
+        @else 
+            bg-secondary 
+        @endif">
+        {{ $client->statut }}
+    </span>
+</td>
+
                         <td>
                         <a href="#" class="text-primary me-2" id="showClientButton" data-bs-toggle="modal" data-bs-target="#clientModal">
     <i class="bi bi-eye-fill"></i>  
@@ -54,7 +62,7 @@
                                 <i class="bi bi-pencil-fill"></i>
                             </button>
 
-                            <form action="{{ route('clients.destroy', $client) }}" method="POST" class="d-inline">
+                            <form action="{{ route('clients.destroy', $client->id) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-link p-0 text-danger" onclick="return confirm('Supprimer ce client ?')">

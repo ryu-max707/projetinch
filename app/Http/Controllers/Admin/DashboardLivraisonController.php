@@ -13,8 +13,8 @@ class DashboardLivraisonController extends Controller
     {
         $livraisons = Colis::with('client')->latest()->take(10)->get();
         $colisEnTransit = Colis::where('statut', 'en transit')->count();
-        $livraisonsDuJour = Livraison::whereDate('date_livraison', today())->count();
-        $retards = Livraison::where('statut', 'retardé')->count();
+        $livraisonsDuJour = Colis::whereDate('date_envoi', today())->count();
+        $retards = Colis::where('statut', 'Retardé')->count();
         $satisfaction = 44; // à calculer si tu veux une vraie valeur
 
         return view('admin.dashboard-livraison', compact(

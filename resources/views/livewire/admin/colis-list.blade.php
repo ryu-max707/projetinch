@@ -13,6 +13,21 @@
         </button>
     </div>
 
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-8">
+                    <div class="input-group">
+                        <!-- Champ de recherche lié à la propriété search -->
+                        <input type="text" class="form-control" placeholder="Recherche par numéro, client, destination..." 
+                               wire:model.debounce.300ms="search">
+                        <!-- On peut supprimer le bouton car la recherche est désormais dynamique -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Message succès -->
     @if (session()->has('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -113,6 +128,12 @@
                             </td>
                         </tr>
                     @endforeach
+
+                    @if($colis->count() == 0)
+                        <tr>
+                            <td colspan="6" class="text-center py-3">Aucun colis trouvé.</td>
+                        </tr>
+                    @endif
                 </tbody>
             </table>
         </div>
@@ -123,4 +144,17 @@
             </nav>
         </div>
     </div>
+    
+    <!-- Script pour fermer le modal après actions -->
+    <script>
+        document.addEventListener('livewire:load', function () {
+            Livewire.on('colisAdded', function () {
+                $('#colisModal').modal('hide');
+            });
+            
+            Livewire.on('colisUpdated', function () {
+                $('#colisModal').modal('hide');
+            });
+        });
+    </script>
 </div>

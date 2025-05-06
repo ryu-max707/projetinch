@@ -4,30 +4,65 @@ namespace App\Http\Livewire\Admin;
 
 use Livewire\Component;
 use App\Models\Livraison;
+use Livewire\WithPagination;
 
 class LivraisonList extends Component
 {
-    protected $listeners = ['refresh' => '$refresh'];
+    use WithPagination;
+    protected $listeners = ['refreshLivraisons' => '$refresh'];
+
+    
+    protected $paginationTheme = 'bootstrap'; // Assure que la pagination utilise Bootstrap
+
+    public $search = '';
+    public $selectedId;
+    
+    // Définir les query strings pour que l'état soit conservé dans l'URL
+    protected $queryString = ['search' => ['except' => '']];
+
+    // Cette méthode est appelée automatiquement par Livewire quand $search change
+    public function updatedSearch()
+    {
+        // Reset la pagination quand la recherche change
+        $this->resetPage();
+    }
 
     public function render()
     {
-        // Affiche les livraisons du plus ancien au plus récent
-        $livraisons = Livraison::orderBy('id', 'asc')->paginate(13);
+        $livraisons = Livraison::query()
+            ->when($this->search, function ($query) {
+                $query->where(function($q) {
+                    $q->where('numero_colis', 'like', '%' . $this->search . '%')
+                      ->orWhere('livreur', 'like', '%' . $this->search . '%')
+                      ->orWhere('destination', 'like', '%' . $this->search . '%');
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
         return view('livewire.admin.livraison-list', compact('livraisons'));
     }
-     public function edit($id)
+
+    public function edit($id)
     {
-        // Utilisation de emitUp pour atteindre le composant parent s'il existe
-        $this->emitUp('editLivraison', $id);
+        $this->emit('editLivraison', $id);
     }
 
-    public function delete($id)
+    public function confirmDelete($id)
     {
-        Livraison::destroy($id);
-        session()->flash('message', 'Livraison supprimée.');
-        
-        // Rafraîchit uniquement ce composant sans rechargement
-        $this->emitSelf('refresh');
+        $this->selectedId = $id;
+        $this->dispatchBrowserEvent('show-delete-confirmation');
+    }
+
+    public function delete()
+    {
+        Livraison::destroy($this->selectedId);
+        session()->flash('message', 'Livraison supprimée avec succès.');
+        $this->selectedId = null;
+    }
+    
+    public function showDetails($id)
+    {
+        $this->emit('showLivraisonDetails', $id);
     }
 }

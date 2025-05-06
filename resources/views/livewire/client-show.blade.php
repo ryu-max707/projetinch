@@ -13,7 +13,7 @@
             {{ $client->created_at ? $client->created_at->format('d/m/Y H:i') : 'Date inconnue' }}
         </p>
 
-        <!-- <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary mt-3">Retour</a> -->
+        
     </div>
 </div>
  

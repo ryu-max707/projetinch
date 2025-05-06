@@ -7,27 +7,15 @@ use App\Models\Livraison;
 
 class LivraisonShow extends Component
 {
-    public $numero_colis, $telephone, $colis, $date_livraison, $heure_livraison, $destination, $livreur, $detail_livraison, $statut;
+    public $livraison;
+    public $livraisonId;
 
-    protected $listeners = ['showLivraison'];
+    protected $listeners = ['showLivraisonDetails' => 'loadLivraison'];
 
-    public function showLivraison($id)
+    public function loadLivraison($id)
     {
-        $livraison = Livraison::findOrFail($id);
-        $this->numero_colis = $livraison->numero_colis;
-        $this->colis = $livraison->colis;
-        $this->detail_livraison = $livraison->detail_livraison;
-        $this->telephone = $livraison->telephone;
-        // $this->date_livraison = $livraison->date_livraison;
-        // $this->heure_livraison = $livraison->heure_livraison;
-        $this->statut = $livraison->statut;
-        $this->date_livraison = \Carbon\Carbon::parse($livraison->date_livraison)->format('d/m/Y');
-        $this->heure_livraison = \Carbon\Carbon::parse($livraison->heure_livraison)->format('H:i');
-        $this->telephone = $livraison->telephone;
-
-        $this->destination = $livraison->destination;
-        $this->livreur = $livraison->livreur;
-        $this->statut = $livraison->statut;
+        $this->livraisonId = $id;
+        $this->livraison = Livraison::find($id);
     }
 
     public function render()

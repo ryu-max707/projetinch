@@ -2,6 +2,9 @@
     <!DOCTYPE html>
 <html lang="fr">
 <head>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <meta charset="UTF-8">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,19 +20,20 @@
 </head>
     @livewireStyles
 </head>
-<body class="layout-body" style="display: flex; min-height: 100vh;">
-
+<body class="layout-body" >
+<div style="display: flex;"> 
     <div class="sidebar" style="width: 200px; background: #333; color: white;">
         @include('layouts.partials.sidebar')
     </div>
 
-    <div class="main-content" style="flex: 1; padding: 20px; margin: 70px;">
+    <div class="main-content" style=" padding: 20px;">
         @include('layouts.partials.navbar')
 
         <main class="content-placeholder" style="margin-top: 20px;">
             {{ $slot }}
         </main>
     </div>
+</div>
 
     @livewireScripts
 </body>
@@ -38,7 +42,7 @@
 
 <style>
 
- 
+
 .clean-table td,
 .clean-table th {
     border-left: none !important;

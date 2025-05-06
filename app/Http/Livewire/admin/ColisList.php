@@ -13,8 +13,12 @@ class ColisList extends Component
     public $numero_colis, $client, $destination, $date_envoi, $statut;
     public $colis_id = null;
     public $isEditMode = false;
+    public $search = ''; // Ajout de la propriété search
 
     protected $paginationTheme = 'bootstrap';
+    
+    // Mise à jour de la queryString pour inclure la recherche
+    protected $queryString = ['search' => ['except' => '']];
 
     protected $rules = [
         'numero_colis' => 'required|string|max:255',
@@ -32,9 +36,26 @@ class ColisList extends Component
         'statut.required' => 'Le statut est obligatoire.',
     ];
 
+    // Méthode appelée automatiquement quand la recherche change
+    public function updatedSearch()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
-        $colis = Colis::latest()->paginate(10);
+        // Modifier la requête pour inclure la recherche
+        $colis = Colis::query()
+            ->when($this->search, function($query) {
+                $query->where(function($q) {
+                    $q->where('numero_colis', 'like', '%' . $this->search . '%')
+                      ->orWhere('client', 'like', '%' . $this->search . '%')
+                      ->orWhere('destination', 'like', '%' . $this->search . '%');
+                });
+            })
+            ->latest()
+            ->paginate(10);
+            
         return view('livewire.admin.colis-list', compact('colis'));
     }
 
@@ -63,6 +84,7 @@ class ColisList extends Component
 
         session()->flash('success', 'Colis ajouté avec succès.');
         $this->resetFields();
+        $this->emit('colisAdded'); // Émet un événement après l'ajout
     }
 
     public function edit($id)
@@ -92,6 +114,7 @@ class ColisList extends Component
 
         session()->flash('success', 'Colis modifié avec succès.');
         $this->resetFields();
+        $this->emit('colisUpdated'); // Émet un événement après la mise à jour
     }
 
     public function delete($id)

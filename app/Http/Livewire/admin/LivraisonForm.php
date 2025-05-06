@@ -4,83 +4,70 @@ namespace App\Http\Livewire\Admin;
 
 use Livewire\Component;
 use App\Models\Livraison;
-use Carbon\Carbon;
 
 class LivraisonForm extends Component
 {
-    public $livraisonId, $numero_colis, $telephone, $date_livraison, $heure_livraison, $colis, $destination, $livreur, $statut;
-    public $mode = 'create';
+    public $mode = 'create'; // ou 'edit'
+    public $livraisonId;
 
-    protected $listeners = ['editLivraison' => 'edit'];
+    public $numero_colis, $livreur, $colis, $destination, $date_livraison, $heure_livraison, $statut, $telephone;
+
+    protected $listeners = ['editLivraison' => 'loadLivraison'];
+
+    protected $rules = [
+        'numero_colis' => 'required',
+        'livreur' => 'required',
+        'colis' => 'required|numeric',
+        'destination' => 'required',
+        'date_livraison' => 'required|date',
+        'heure_livraison' => 'required',
+        'statut' => 'required',
+        'telephone' => 'nullable',
+    ];
+
+    public function mount($mode = 'create')
+    {
+        $this->mode = $mode;
+    }
 
     public function resetFormFields()
     {
-        $this->reset([
-            'livraisonId', 'numero_colis', 'telephone',
-            'date_livraison', 'heure_livraison', 'colis',
-            'destination', 'livreur', 'statut', 'mode'
-        ]);
-        $this->mode = 'create';
+        $this->reset(['livraisonId', 'numero_colis', 'livreur', 'colis', 'destination', 'date_livraison', 'heure_livraison', 'statut', 'telephone']);
     }
 
-    protected function rules()
+    public function loadLivraison($id)
     {
-        return [
-            'numero_colis'    => 'required',
-            'colis'           => 'required',
-            'destination'     => 'required',
-            'livreur'         => 'required',
-            'date_livraison'  => 'required|date',
-            'heure_livraison' => 'required|date_format:H:i',
-            'telephone'       => 'required',
-            'statut'          => 'required'
-        ];
+        $this->mode = 'edit';
+        $livraison = Livraison::findOrFail($id);
+        $this->livraisonId = $livraison->id;
+        $this->numero_colis = $livraison->numero_colis;
+        $this->livreur = $livraison->livreur;
+        $this->colis = $livraison->colis;
+        $this->destination = $livraison->destination;
+        $this->date_livraison = $livraison->date_livraison;
+        $this->heure_livraison = $livraison->heure_livraison;
+        $this->statut = $livraison->statut;
+        $this->telephone = $livraison->telephone;
+
+        $this->dispatchBrowserEvent('show-edit-modal');
     }
 
     public function save()
     {
         $this->validate();
 
-        $data = [
-            'numero_colis'    => $this->numero_colis,
-            'colis'           => $this->colis,
-            'date_livraison'  => Carbon::parse($this->date_livraison)->format('Y-m-d'),
-            'heure_livraison' => $this->heure_livraison,
-            'telephone'       => $this->telephone,
-            'destination'     => $this->destination,
-            'livreur'         => $this->livreur,
-            'statut'          => $this->statut
-        ];
-
-        if ($this->mode === 'edit' && $this->livraisonId) {
-            Livraison::findOrFail($this->livraisonId)->update($data);
-            session()->flash('message', 'Livraison mise à jour !');
+        if ($this->mode === 'create') {
+            Livraison::create($this->only(['numero_colis', 'livreur', 'colis', 'destination', 'date_livraison', 'heure_livraison', 'statut', 'telephone']));
+            session()->flash('message', 'Livraison ajoutée avec succès.');
         } else {
-            Livraison::create($data);
-            session()->flash('message', 'Livraison ajoutée !');
+            Livraison::where('id', $this->livraisonId)->update($this->only(['numero_colis', 'livreur', 'colis', 'destination', 'date_livraison', 'heure_livraison', 'statut', 'telephone']));
+            session()->flash('message', 'Livraison modifiée avec succès.');
         }
 
-        $this->resetFormFields();
-        $this->dispatchBrowserEvent('close-modal');
-        $this->emitUp('refresh'); // important pour bien propager à la liste
-
-         
-    }
-
-    public function edit($id)
-    {
-        $this->mode = 'edit';
-        $livraison = Livraison::findOrFail($id);
-
-        $this->livraisonId     = $livraison->id;
-        $this->numero_colis    = $livraison->numero_colis;
-        $this->telephone       = $livraison->telephone;
-        $this->date_livraison  = Carbon::parse($livraison->date_livraison)->format('Y-m-d');
-        $this->heure_livraison = Carbon::parse($livraison->heure_livraison)->format('H:i');
-        $this->colis           = $livraison->colis;
-        $this->destination     = $livraison->destination;
-        $this->livreur         = $livraison->livreur;
-        $this->statut          = $livraison->statut;
+        $this->reset(); // Réinitialiser les champs
+    $this->dispatchBrowserEvent('close-modal'); // Fermer le modal
+    $this->emit('refreshLivraisons');           // Rafraîchir la liste
+    session()->flash('message', 'Livraison ajoutée avec succès.');
     }
 
     public function render()
@@ -88,4 +75,3 @@ class LivraisonForm extends Component
         return view('livewire.admin.livraison-form');
     }
 }
-
