@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\DashboardLivraisonController;
 use App\Http\Controllers\Admin\ClientDashboardController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\GoogleAuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,21 +27,20 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('auth/google', [GoogleAuthController::class, 'redirect'])->name('google.auth');
+Route::get('auth/google/call-back', [GoogleAuthController::class, 'callbackGoogle'])->name('google.callback');
 
-/*
-|--------------------------------------------------------------------------
-| Routes protégées avec Sanctum
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth:sanctum'])->group(function () {
+// --------------------------------------------------------------------------
+// Routes protégées par session (auth classique)
+// --------------------------------------------------------------------------
+Route::middleware(['auth'])->group(function () {
 
-    /**
-     * Routes CLIENT UNIQUEMENT
-     */
+    // ----------------------------------------------------------------------
+    // Routes CLIENT UNIQUEMENT
+    // ----------------------------------------------------------------------
     Route::middleware('role:client')->group(function () {
-        Route::get('/notifications', [NotificationController::class, 'notifications'])->name('client.notifications');
         Route::get('/dashboard-client', [ClientDashboardController::class, 'index'])->name('client.dashboard');
-         
+        Route::get('/notifications', [NotificationController::class, 'notifications'])->name('client.notifications');
     });
 
     /**
@@ -61,7 +61,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         
         Route::get('/colis', [ColisController::class, 'index'])->name('colis');
     });
-
+    
 
 
     Route::delete('/clients/{client}', [DashboardController::class, 'destroy'])->name('clients.destroy');

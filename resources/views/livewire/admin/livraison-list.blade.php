@@ -80,8 +80,8 @@
 
 <!-- Exemple dans la liste -->
 <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#livraisonModal"
-    wire:click="$emit('showLivraisonDetails', {{ $livraison->id }})">
-    Voir
+    wire:click="$emit('showLivraisonDetails', {{ $livraison->id ?? 0}})">
+     
 </button>
 
 

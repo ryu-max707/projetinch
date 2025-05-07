@@ -10,8 +10,7 @@
         @livewire('admin.colis-list')
 
         {{-- Modals ajout/modification (si tu utilises des modals dans layout, insère les ici aussi) --}}
-        @livewire('admin.livraison-form') {{-- Exemple si modal intégré dans ce composant --}}
-
+        
         {{-- JS Bootstrap + Livewire Events --}}
         <script>
             // Événement pour fermer les modals Bootstrap

@@ -53,13 +53,15 @@
              
 
             <!-- Rapports (uniquement admin) -->
+             @if ( $role === 'client')
            
             <li>
-                <a href="{{ $role === 'admin' ?   : route('client.notifications') }}" class="nav-link link-dark">
-                    <i class="bi bi-file-text me-2"></i>
-                    Rapports
+                <a href="{{  route('client.notifications') }}" class="nav-link link-dark">
+                    <i class="bi bi-bell fs-5"></i>
+                    notifications
                 </a>
             </li>
+            @endif
              
 
             <!-- Paramètres -->
