@@ -1,5 +1,6 @@
 @php
     $role = Auth::user()->role ?? null;
+    $currentRoute = Route::currentRouteName();
 @endphp
 
 <div class="sidebar">
@@ -11,62 +12,75 @@
         <ul class="nav nav-pills flex-column mb-auto">
             <!-- Tableau de bord -->
             <li class="nav-item">
-                <a href="{{ $role === 'admin' ? route('admin.dashboard.livraison')   : route('client.dashboard') }}" class="nav-link link-dark">
+                @php
+                    $dashboardRoute = $role === 'admin' ? 'admin.dashboard.livraison' : 'client.dashboard';
+                    $isDashboardActive = $currentRoute === $dashboardRoute;
+                @endphp
+                <a href="{{ route($dashboardRoute) }}" class="nav-link {{ $isDashboardActive ? 'active' : 'link-dark' }}">
                     <i class="bi bi-speedometer2 me-2"></i>
                     Tableau de bord
                 </a>
             </li>
 
             <!-- Colis -->
+            @if ($role === 'admin')
             <li>
-                <a href="{{ $role === 'admin' ? route('admin.colis')  : route('client.notifications') }}" class="nav-link link-dark">
+                @php 
+                     
+                    $isColisActive = $currentRoute === 'admin.colis';
+                @endphp
+                <a href="{{ route('admin.colis') }}" class="nav-link {{ $isColisActive ? 'active' : 'link-dark' }}">
                     <i class="bi bi-box-seam me-2"></i>
                     Colis
                 </a>
             </li>
+            @endif
 
-            <!-- Livraisons -->
-             
-  
-
-@if ($role === 'admin')
-<li>
-    <a href="{{ route('admin.livraison') }}" class="nav-link link-dark">
-        <i class="bi bi-truck me-2"></i>
-        Livraisons
-    </a>
-</li>
-@endif
-
-
-           <!-- Clients (uniquement admin) -->
-
-           @if ($role === 'admin')
-<li>
-    <a href="{{ route('admin.admin.dashboard') }}" class="nav-link link-dark">
-        <i class="bi bi-people me-2"></i>
-        Clients
-    </a>
-</li>
-@endif
-
-             
-
-            <!-- Rapports (uniquement admin) -->
-             @if ( $role === 'client')
-           
+            <!-- Livraisons (uniquement admin) -->
+            @if ($role === 'admin')
             <li>
-                <a href="{{  route('client.notifications') }}" class="nav-link link-dark">
-                    <i class="bi bi-bell fs-5"></i>
-                    notifications
+                @php
+                    $isLivraisonActive = $currentRoute === 'admin.livraison';
+                @endphp
+                <a href="{{ route('admin.livraison') }}" class="nav-link {{ $isLivraisonActive ? 'active' : 'link-dark' }}">
+                    <i class="bi bi-truck me-2"></i>
+                    Livraisons
                 </a>
             </li>
             @endif
-             
+
+            <!-- Clients (uniquement admin) -->
+            @if ($role === 'admin')
+            <li>
+                @php
+                    $isClientsActive = $currentRoute === 'admin.admin.dashboard';
+                @endphp
+                <a href="{{ route('admin.admin.dashboard') }}" class="nav-link {{ $isClientsActive ? 'active' : 'link-dark' }}">
+                    <i class="bi bi-people me-2"></i>
+                    Clients
+                </a>
+            </li>
+            @endif
+
+            <!-- Notifications (uniquement client) -->
+            @if ($role === 'client')
+            <li>
+                @php
+                    $isNotificationsActive = $currentRoute === 'client.notifications';
+                @endphp
+                <a href="{{ route('client.notifications') }}" class="nav-link {{ $isNotificationsActive ? 'active' : 'link-dark' }}">
+                    <i class="bi bi-bell fs-5"></i>
+                    Notifications
+                </a>
+            </li>
+            @endif
 
             <!-- Paramètres -->
             <li>
-                <a href="" class="nav-link link-dark">
+                @php
+                    $isSettingsActive = $currentRoute === 'settings'; // Remplacez par le nom de votre route de paramètres
+                @endphp
+                <a href="#" class="nav-link {{ $isSettingsActive ? 'active' : 'link-dark' }}">
                     <i class="bi bi-gear me-2"></i>
                     Paramètres
                 </a>
@@ -74,3 +88,20 @@
         </ul>
     </div>
 </div>
+
+<style>
+    .nav-link.active {
+        background-color: #0d6efd !important; /* Couleur bleue de Bootstrap */
+        color: white !important;
+    }
+    
+    .nav-link {
+        border-radius: 5px;
+        margin-bottom: 5px;
+        transition: all 0.3s ease;
+    }
+    
+    .nav-link:hover:not(.active) {
+        background-color: rgba(13, 110, 253, 0.1);
+    }
+</style>

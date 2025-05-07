@@ -30,18 +30,14 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('auth/google', [GoogleAuthController::class, 'redirect'])->name('google.auth');
 Route::get('auth/google/call-back', [GoogleAuthController::class, 'callbackGoogle'])->name('google.callback');
 
-// --------------------------------------------------------------------------
-// Routes protégées par session (auth classique)
-// --------------------------------------------------------------------------
 Route::middleware(['auth'])->group(function () {
 
-    // ----------------------------------------------------------------------
-    // Routes CLIENT UNIQUEMENT
-    // ----------------------------------------------------------------------
-    Route::middleware('role:client')->group(function () {
+    Route::middleware(['role:client'])->group(function () {
         Route::get('/dashboard-client', [ClientDashboardController::class, 'index'])->name('client.dashboard');
         Route::get('/notifications', [NotificationController::class, 'notifications'])->name('client.notifications');
     });
+
+});
 
     /**
      * Routes ADMIN UNIQUEMENT
@@ -66,4 +62,4 @@ Route::middleware(['auth'])->group(function () {
 
     Route::delete('/clients/{client}', [DashboardController::class, 'destroy'])->name('clients.destroy');
     Route::delete('/livraisons/{livraison}', [LivraisonController::class, 'destroy'])->name('livraisons.destroy');
-});
+

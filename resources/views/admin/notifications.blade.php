@@ -76,7 +76,7 @@
                                         @endif
                                     </small>
                                 </div>
-                                <p class="mb-0 text-muted">{{ $item->message }}   votre est  colis  </p>
+                                <p class="mb-0 text-muted">{{ $item->message }}   le  colis {{$item->numero_colis}}  est actuellement en {{ $item->statut }} </p>
                             </div>
                         </div>
                     </div>
